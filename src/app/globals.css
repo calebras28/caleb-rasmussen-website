@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens (Neo-Brutalist)                                       */
+/* ------------------------------------------------------------------ */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --color-paper: #faf6ec;
+  --color-paper-alt: #f2ecdb;
+  --color-ink: #101010;
+
+  --color-brand-blue: #2b50ff;
+  --color-brand-yellow: #ffd21e;
+  --color-brand-red: #ff4d3d;
+  --color-brand-lime: #b9f227;
+  --color-brand-purple: #b57bff;
+  --color-brand-pink: #ff8fd6;
+
+  --radius-brutal: 6px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Semantic theme variables                                            */
+/* ------------------------------------------------------------------ */
+:root {
+  --background: #faf6ec;
+  --surface: #ffffff;
+  --surface-alt: #f2ecdb;
+  --foreground: #101010;
+  --muted: #5b5647;
+  --border: #101010;
+  --shadow-color: #101010;
+  --accent: #2b50ff;
+  --accent-foreground: #ffffff;
+  --ring: #2b50ff;
+}
+
+.dark {
+  --background: #0d0d0f;
+  --surface: #17171b;
+  --surface-alt: #1f1f25;
+  --foreground: #f5f3ea;
+  --muted: #a5a091;
+  --border: #f5f3ea;
+  --shadow-color: #000000;
+  --accent: #b9f227;
+  --accent-foreground: #101010;
+  --ring: #b9f227;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Respect reduced motion preferences. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Neo-brutalist utilities                                             */
+/* ------------------------------------------------------------------ */
+@layer utilities {
+  .border-brutal {
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--border);
+  }
+
+  .shadow-brutal {
+    box-shadow: 4px 4px 0 0 var(--shadow-color);
+  }
+  .shadow-brutal-sm {
+    box-shadow: 2px 2px 0 0 var(--shadow-color);
+  }
+  .shadow-brutal-lg {
+    box-shadow: 8px 8px 0 0 var(--shadow-color);
+  }
+  .shadow-brutal-xl {
+    box-shadow: 12px 12px 0 0 var(--shadow-color);
+  }
+
+  .hover-brutal {
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .hover-brutal:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--shadow-color);
+  }
+  .hover-brutal:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 0 var(--shadow-color);
+  }
+
+  .text-shadow-brutal {
+    text-shadow: 3px 3px 0 var(--shadow-color);
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--foreground) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--foreground) 8%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--foreground) 14%, transparent) 1.5px,
+      transparent 1.5px
+    );
+    background-size: 18px 18px;
+  }
+
+  .marquee-track {
+    animation: marquee 28s linear infinite;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,258 @@
+// Prisma schema for the personal portfolio application.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Projects
+// ---------------------------------------------------------------------------
+
+enum ProjectCategory {
+  FULLSTACK
+  FRONTEND
+  BACKEND
+  MOBILE
+  AI
+  PERSONAL
+  SCHOOL
+}
+
+enum ProjectStatus {
+  IDEA
+  PLANNING
+  IN_DEVELOPMENT
+  TESTING
+  DEPLOYED
+  COMPLETED
+}
+
+model Project {
+  id                 String          @id @default(cuid())
+  slug               String          @unique
+  title              String
+  summary            String
+  description        String
+  problem            String?
+  solution           String?
+  features           String[]
+  architecture       String?
+  whatILearned       String?
+  challenges         String?
+  futureImprovements String?
+  category           ProjectCategory @default(FULLSTACK)
+  status             ProjectStatus   @default(COMPLETED)
+  githubUrl          String?
+  liveUrl            String?
+  coverImage         String?
+  featured           Boolean         @default(false)
+  order              Int             @default(0)
+  date               DateTime        @default(now())
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  technologies ProjectTechnology[]
+  images       ProjectImage[]
+
+  @@index([featured])
+  @@index([category])
+  @@index([status])
+}
+
+model Technology {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  category  String?
+  color     String?
+  createdAt DateTime @default(now())
+
+  projects ProjectTechnology[]
+}
+
+model ProjectTechnology {
+  projectId    String
+  technologyId String
+
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, technologyId])
+  @@index([technologyId])
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  url       String
+  alt       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// ---------------------------------------------------------------------------
+// Currently working on
+// ---------------------------------------------------------------------------
+
+model NowItem {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  status       ProjectStatus @default(IN_DEVELOPMENT)
+  progress     Int           @default(0)
+  technologies String[]
+  goals        String?
+  order        Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Mission
+// ---------------------------------------------------------------------------
+
+model MissionStory {
+  id        String         @id @default(cuid())
+  title     String
+  location  String
+  date      DateTime
+  body      String
+  order     Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  photos MissionPhoto[]
+
+  @@index([order])
+}
+
+model MissionPhoto {
+  id        String   @id @default(cuid())
+  storyId   String?
+  url       String
+  caption   String?
+  location  String?
+  date      DateTime?
+  width     Int?
+  height    Int?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  story MissionStory? @relation(fields: [storyId], references: [id], onDelete: SetNull)
+
+  @@index([storyId])
+}
+
+// ---------------------------------------------------------------------------
+// Resume
+// ---------------------------------------------------------------------------
+
+model Experience {
+  id          String    @id @default(cuid())
+  role        String
+  company     String
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String
+  highlights  String[]
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([order])
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  school      String
+  degree      String
+  field       String?
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String?
+  highlights  String[]
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([order])
+}
+
+model ResumeSkill {
+  id        String   @id @default(cuid())
+  category  String
+  name      String
+  level     Int      @default(3)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([category])
+}
+
+// ---------------------------------------------------------------------------
+// Contact + settings
+// ---------------------------------------------------------------------------
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+  @@index([createdAt])
+}
+
+model SiteSettings {
+  id           String   @id @default("singleton")
+  fullName     String
+  tagline      String
+  bio          String
+  email        String
+  location     String?
+  githubUrl    String?
+  linkedinUrl  String?
+  twitterUrl   String?
+  websiteUrl   String?
+  resumeUrl    String?
+  avatarUrl    String?
+  updatedAt    DateTime @updatedAt
+}
